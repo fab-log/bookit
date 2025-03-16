@@ -1,2 +1,2 @@
 # bookit
-Booking tool for conferences or education including catering options
+Room booking tool for conferences or education including catering options
