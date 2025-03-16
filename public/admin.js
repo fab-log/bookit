@@ -799,6 +799,7 @@ const renderAdminTools = () => {
 }
 
 const exportData = () => {
+	console.log("=> fn exportData triggered");
 	const bookingsClone = structuredClone(bookings);
 	for (let i = 0; i < bookingsClone.length; i++) {
 		let roomsString = "";
@@ -830,6 +831,7 @@ const exportData = () => {
 	bookingsClone.forEach(e => {
 		csv += `${e.title.replaceAll(",", " /")},${e.state.replaceAll(",", " /")},${e.startDate.replaceAll(",", " /")},${e.endDate.replaceAll(",", " /")},${e.startTime.replaceAll(",", " /")},${e.endTime.replaceAll(",", " /")},${e.firstName.replaceAll(",", " /")} ${e.lastName.replaceAll(",", " /")},${e.email.replaceAll(",", " /")},${e.phone1.replaceAll(",", " /")},${e.phone2.replaceAll(",", " /") || ""},${e.account},${e.account2},${e.participants},${e.rooms.replaceAll(",", " /")},${e.seating.replaceAll(",", " /")},${e.equipment.replaceAll(",", " /")},${e.catering.replaceAll(",", " /")},${e.totalCatering || ""},${e.totalRooms || ""},${e.total || ""},${e.annotation.replaceAll(",", " /")}\n`;
 	});
+	console.log(csv);
 	let timestamp = Date.now();
 	let now = new Date(timestamp);
 	let dateString = now.toISOString().substring(0, 16).replaceAll(":", "-");
