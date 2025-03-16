@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Buchungstool</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<link rel="icon" type="image/png" href="favicon.png">	
+</head>
+<body>
+	<div class="main">
+
+		<div class="header">
+
+			<div class="header-grid-item" onclick="renderHome()">
+				<figure>
+					<img src="assets/home.webp" alt="Kalender">
+					<figcaption>Start</figcaption>
+				</figure>
+			</div>
+
+			<div class="header-grid-item" onclick="renderCalendar()">
+				<figure>
+					<img src="assets/agenda.webp" alt="Kalender">
+					<figcaption>Kalender</figcaption>
+				</figure>
+			</div>
+
+			<div class="header-grid-item" onclick="renderOneDay()">
+				<figure>
+					<img src="assets/one.webp" alt="Tagesansicht">
+					<figcaption>Tagesansicht</figcaption>
+				</figure>
+			</div>
+
+			<div class="header-grid-item" onclick="renderGuidedMenu()">
+				<figure>
+					<img src="assets/booking.webp" alt="Buchen">
+					<figcaption>Buchen</figcaption>
+				</figure>
+			</div>
+
+		</div> <!-- header -->
+
+		<div class="modal modal-max">
+			
+		</div>
+
+		<div class="modal modal-pop-up">
+			
+		</div>
+
+		<div class="alert" id="alert"></div>
+
+	</div>	<!-- main -->
+
+	<script src="main.js"></script>
+	<script src="login.js"></script>
+	<script src="home.js"></script>
+	<script src="calendar.js"></script>
+	<script src="day.js"></script>
+	<script src="book.js"></script>
+	<script src="admin.js"></script>
+
+</body>
+</html>
