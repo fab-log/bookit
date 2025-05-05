@@ -22,7 +22,7 @@ Room booking tool for conferences or education including catering options
   **Costs** are displayed and updated during the booking process.
   Multiple **input checks** prevent bookings from being saved without all the necessary data.
 
-- **Adim tools** providing
+- **Admim tools** providing
   
   - Adding, editing, or deleting rooms
   
@@ -52,7 +52,7 @@ The application does not provide a full user management. Though, regular users a
 
 The initial password (user and admin) after installation is set to `321321321`.
 
-Be cautious when passing the password to new users or admins and update the passwords regularly.
+Be cautious when passing the password to new users or admins, and update the passwords regularly.
 
 #### Installation
 
