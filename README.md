@@ -1,4 +1,4 @@
-# bookit
+<img src="public/assets/logo.webp" width="250" alt="bookit logo">
 
 Room booking tool for conferences or education including catering options
 ----
