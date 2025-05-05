@@ -1,17 +1,25 @@
 {
-  "name": "buchungstool",
+  "name": "bookit",
   "version": "1.0.0",
   "main": "bookitServer.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Fabian Ruin",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.21.2",
     "nodemailer": "^6.10.0"
   },
   "devDependencies": {},
-  "description": ""
+  "description": "web based room booking tool",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fab-log/bookit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fab-log/bookit/issues"
+  },
+  "homepage": "https://github.com/fab-log/bookit#readme"
 }
