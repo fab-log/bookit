@@ -55,8 +55,12 @@ const checkTimeSlot = (element, room, id) => {
 			bookings[index].equipment.forEach(e => {
 				if (Number(e[0] != 0)) {
 					let eqmIndex = equipment.findIndex(el => el.id === e[1]);
-					let eqmName = equipment[eqmIndex].name;
-					orderedEquipment += `${e[0]} x ${eqmName}<br>`
+					if (eqmIndex === -1) {
+						orderedEquipment += "<i>[nicht mehr verfügbare Ausrüstung]</i><br>";
+					} else {
+						let eqmName = equipment[eqmIndex].name;
+						orderedEquipment += `${e[0]} x ${eqmName}<br>`;						
+					}
 				}
 			});
 			let phone2 = "";
@@ -67,7 +71,11 @@ const checkTimeSlot = (element, room, id) => {
 			let cateringString = "Catering<br>";
 			bookings[index].catering.forEach(e => {
 				let cateringIndex = catering.findIndex(el => el.id === e);
-				cateringString += `- ${catering[cateringIndex].name}<br>`
+				if (cateringIndex === -1) {
+					cateringString += "- <i>[nicht mehr verfügbarer Artikel]</i><br>";
+				} else {
+					cateringString += `- ${catering[cateringIndex].name}<br>`;
+				}
 			});
 			showAlert(`
 				<p style="float: right; margin-top:-36px;" onclick="closeAlert()"><b>X</b></p>

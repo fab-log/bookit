@@ -26,6 +26,7 @@ const addNewArticle = () => {
 		<tr>
 			<td><input type="checkbox" checked id="chb_${newCateringObject.id}"></td>
 			<td><input type="text" id="inpName_${newCateringObject.id}" value="${newCateringObject.name}"></td>
+			<td><input type="text" id="inpDescription_${newCateringObject.id}" value="${newCateringObject.description}"></td>
 			<td><input type="number" id="inpPrice_${newCateringObject.id}" value="${newCateringObject.price.toFixed(2)}"></td>
 		</tr>
 	`;
@@ -42,7 +43,7 @@ const renderAddNewCateringArticle = () => {
 				<td>Bezeichnung</td><td><input type="text" maxlength="100" id="inpNewArticleName"></td>
 			</tr>
 			<tr>
-				<td>Beschreibung</td><td><input type="text" maxlength="100" value="Einzelpreis: € " id="inpNewArticleDescription"></td>
+				<td>Beschreibung</td><td><input type="text" maxlength="250" id="inpNewArticleDescription"></td>
 			</tr>
 			<tr>
 				<td>Preis <span class="small decent">(pro TeilnehmerIn)</span></td><td><input type="number" max="100" id="inpNewArticlePrice"></td>
@@ -60,18 +61,20 @@ const saveCatering = async () => {
 	for (let i = 0; i < catering.length; i++) {
 		if (document.querySelector(`#chb_${catering[i].id}`).checked != true) toBeRemoved.push(catering[i].id);
 		let inpName = document.querySelector(`#inpName_${catering[i].id}`);
+		let inpDescription = document.querySelector(`#inpDescription_${catering[i].id}`);
 		let inpPrice = document.querySelector(`#inpPrice_${catering[i].id}`);
 		if (inpName.value.replaceAll(" ", "") === "") {
-			showAlert("Bitte keine Felder leer lassen", 2000);
+			showAlert("Bitte einen Namen angeben", 2000);
 			inpName.focus();
 			return;
 		}
 		if (inpPrice.value === "") {
-			showAlert("Bitte keine Felder leer lassen", 2000);
+			showAlert("Bitte den Preis angeben", 2000);
 			inpPrice.focus();
 			return;
 		}
 		catering[i].name = inpName.value;
+		catering[i].description = inpDescription.value;
 		catering[i].price = Number(inpPrice.value.trim().replace(",", "."));
 
 	}
@@ -142,6 +145,16 @@ const renderSetCatering = () => {
 		</div>
 	`;
 	const tblSetCatering = document.querySelector("#tblSetCatering");
+	tblSetCatering.innerHTML = `
+		<tr>
+			<th>aktiv</th>
+			<th>Bezeichnung</th>
+			<th>Beschreibung</th>
+			<th>Preis pro TN</th>
+			<th>hoch</th>
+			<th>runter</th>
+		</tr>
+	`;
 	for (let i = 0; i < catering.length; i++) {
 		let arrowUp = `<img src="assets/arrow_right.webp" alt="arrow up" class="arrow-up" onclick="cateringMoveOneUp('${catering[i].id}')"`;
 		if (i === 0) arrowUp = "";
@@ -151,9 +164,10 @@ const renderSetCatering = () => {
             <tr>
                 <td><input type="checkbox" checked id="chb_${catering[i].id}"></td>
 				<td><input type="text" id="inpName_${catering[i].id}" value="${catering[i].name}"></td>
-				<td><input type="number" id="inpPrice_${catering[i].id}" value="${catering[i].price.toFixed(2)}"></td>
-				<td>${arrowUp}</td>
-				<td>${arrowDown}</td>
+				<td><input type="text" id="inpDescription_${catering[i].id}" value="${catering[i].description}" style="width: 360px;"></td>
+				<td><input type="number" id="inpPrice_${catering[i].id}" value="${catering[i].price.toFixed(2)}" style="width: 120px;"></td>
+				<td align="center">${arrowUp}</td>
+				<td align="center">${arrowDown}</td>
             </tr>
         `;
     };
@@ -259,7 +273,6 @@ const renderSetPasswords = () => {
 			<input type="password" id="inpConfirmUserPassword" placeholder="Passwort wiederholen">
 			<br>
 			<button type="button" style="width: fit-content;" onclick="updateUserPassword()">Nutzerpasswort ändern</button>
-			<button type="button" onclick="renderAdminTools()">abbrechen</button>
             <div class="spacer"></div>
 			<hr>
 			<p><b>Administratorpasswort</b></p>
@@ -286,7 +299,8 @@ const addNewRoom = () => {
 	const inpNewRoomName = document.querySelector("#inpNewRoomName");
 	const inpNewRoomFloor = document.querySelector("#inpNewRoomFloor");
 	const inpNewRoomMaxParticipants = document.querySelector("#inpNewRoomMaxParticipants");
-	if (inpNewRoomLocation.value === "" || inpNewRoomName.value === "" || inpNewRoomFloor.value === "" || inpNewRoomMaxParticipants.value === "") {
+	const inpNewRoomFee = document.querySelector("#inpNewRoomFee");
+	if (inpNewRoomLocation.value === "" || inpNewRoomName.value === "" || inpNewRoomFloor.value === "" || inpNewRoomMaxParticipants.value === "" || inpNewRoomFee.value === "") {
 		showAlert("Bitte alle Felder ausfüllen");
 		return;
 	}
@@ -297,16 +311,18 @@ const addNewRoom = () => {
 		roomName: inpNewRoomName.value,
 		floor: inpNewRoomFloor.value,
 		maxParticipants: Number(inpNewRoomMaxParticipants.value),
+		fee: inpNewRoomFee.value,
 		position: rooms.length + 1
 	}
 	rooms.push(newRoomObject);
 	tblSetRooms.innerHTML += `
 		<tr>
 			<td><input type="checkbox" checked id="chb_${newRoomObject.id}"></td>
-			<td><input type="text" class="horizontal-margin-0" id="inpLocation_${newRoomObject.id}" value="${newRoomObject.location}"></td>
-			<td><input type="text" class="horizontal-margin-0" id="inpName_${newRoomObject.id}" value="${newRoomObject.roomName}"></td>
-			<td><input type="text" class="horizontal-margin-0" id="inpFloor_${newRoomObject.id}" value="${newRoomObject.floor}"></td>
-			<td><input type="number" class="horizontal-margin-0" style="width: 100px;" id="inpMaxParticipants_${newRoomObject.id}" value="${newRoomObject.maxParticipants}"></td>
+			<td><input type="text" id="inpLocation_${newRoomObject.id}" value="${newRoomObject.location}"></td>
+			<td><input type="text" id="inpName_${newRoomObject.id}" value="${newRoomObject.roomName}"></td>
+			<td><input type="text" id="inpFloor_${newRoomObject.id}" value="${newRoomObject.floor}"></td>
+			<td><input type="number" style="width: 100px;" id="inpMaxParticipants_${newRoomObject.id}" value="${newRoomObject.maxParticipants}"></td>
+			<td><input type="number" style="width: 100px;" id="inpFee_${newRoomObject.id}" value="${newRoomObject.fee}"></td>
 		</tr>
 	`;
 	dismiss();
@@ -321,6 +337,7 @@ const saveRooms = async () => {
 		let inpName = document.querySelector(`#inpName_${rooms[i].id}`);
 		let inpFloor = document.querySelector(`#inpFloor_${rooms[i].id}`);
 		let inpMaxParticipants = document.querySelector(`#inpMaxParticipants_${rooms[i].id}`);
+		let inpFee = document.querySelector(`#inpFee_${rooms[i].id}`);
 		if (inpLocation.value === "") {
 			showAlert("Bitte keine Felder leer lassen", 2000);
 			inpLocation.focus();
@@ -341,10 +358,16 @@ const saveRooms = async () => {
 			inpMaxParticipants.focus();
 			return;
 		}
+		if (inpFee.value === "") {
+			showAlert("Bitte keine Felder leer lassen", 2000);
+			inpFee.focus();
+			return;
+		}
 		rooms[i].location = inpLocation.value;
 		rooms[i].roomName = inpName.value;
 		rooms[i].floor = inpFloor.value;
 		rooms[i].maxParticipants = Number(inpMaxParticipants.value);
+		rooms[i].fee = Number(inpFee.value);
 	}
 	rooms = rooms.filter(el => !toBeRemoved.includes(el.id)).sort((a, b) => a.position - b.position);
 
@@ -413,6 +436,9 @@ const renderAddNewRoom = () => {
 			<tr>
 				<td>max. TeilnehmerInnenzahl</td><td><input type="number" max="150" id="inpNewRoomMaxParticipants"></td>
 			</tr>
+			<tr>
+				<td>Gebühr</td><td><input type="number" max="500" id="inpNewRoomFee"></td>
+			</tr>
 		</table>
 		<hr>
 		<button type="button" onclick="dismiss()">abbrechen</button>
@@ -427,7 +453,7 @@ const renderSetRooms = () => {
 			<h3>Räume anpassen</h3>
 			<p>Um einen Raum zu löschen, entfernen Sie einfach vor dem Speichern das Häkchen vor der Bezeichnung</p>
 			<hr>
-			<table id="tblSetRooms"></table>
+			<table id="tblSetRooms" class="margin-12-6"></table>
 			<hr>
 			<button type="button" style="float: none;" onclick="renderAddNewRoom()">Raum hinzufügen</button>
 			<hr>
@@ -444,8 +470,9 @@ const renderSetRooms = () => {
 			<th>Raumname</th>
 			<th>Geschoss</th>
 			<th>max. TN</th>
-			<th class="small">hoch</th>
-			<th class="small">runter</th>
+			<th>Gebühr</th>
+			<th>hoch</th>
+			<th>runter</th>
 		</tr>
 	`;
 	for (let i = 0; i < rooms.length; i++) {
@@ -456,12 +483,13 @@ const renderSetRooms = () => {
         tblSetRooms.innerHTML += `
             <tr>
                 <td><input type="checkbox" checked id="chb_${rooms[i].id}"></td>
-				<td><input type="text" class="horizontal-margin-0" id="inpLocation_${rooms[i].id}" value="${rooms[i].location}"></td>
-				<td><input type="text" class="horizontal-margin-0" id="inpName_${rooms[i].id}" value="${rooms[i].roomName}"></td>
-				<td><input type="text" class="horizontal-margin-0" id="inpFloor_${rooms[i].id}" value="${rooms[i].floor}"></td>
-				<td><input type="number" class="horizontal-margin-0" style="width: 100px;" id="inpMaxParticipants_${rooms[i].id}" value="${rooms[i].maxParticipants}"></td>
-				<td>${arrowUp}</td>
-				<td>${arrowDown}</td>
+				<td><input type="text" id="inpLocation_${rooms[i].id}" value="${rooms[i].location}"></td>
+				<td><input type="text" id="inpName_${rooms[i].id}" value="${rooms[i].roomName}"></td>
+				<td><input type="text" id="inpFloor_${rooms[i].id}" value="${rooms[i].floor}"></td>
+				<td><input type="number" style="width: 100px;" id="inpMaxParticipants_${rooms[i].id}" value="${rooms[i].maxParticipants}"></td>
+				<td><input type="number" style="width: 100px;" id="inpFee_${rooms[i].id}" value="${rooms[i].fee}"></td>
+				<td align="center">${arrowUp}</td>
+				<td align="center">${arrowDown}</td>
             </tr>
         `;
     };
@@ -511,7 +539,8 @@ const renderSetFees = () => {
 	modalMax.innerHTML = `
 		<div class="book-main">
 			<h3>Gebühren anpassen</h3>
-			<p>Es können lediglich die Preise angepasst werden.</p>
+			<p>Hier kann lediglich der Nachlass für die Buchung von Nebenräumen angepasst werden.<br>
+			Die Raumgebühr selbst finden Sie unter <i>'Räume'</i>.</p>
 			<hr>
 			<table id="tblSetFees"></table>
 			<p class="small">discount = Nachlass für Nebenräume | 0.25 entspricht 25%</p>
@@ -620,6 +649,12 @@ const renderSetSeatings = () => {
 		</div>
 	`;
 	const tblSetSeatings = document.querySelector("#tblSetSeatings");
+	tblSetSeatings.innerHTML = `
+		<tr>
+			<td>aktiv</td>
+			<td>Bezeichnung</td>
+		</tr>
+	`;
 	for (let i = 0; i < seatings.length; i++) {
         tblSetSeatings.innerHTML += `
             <tr>
@@ -727,6 +762,12 @@ const renderSetEquipment = () => {
 		</div>
 	`;
 	const tblSetEquipment = document.querySelector("#tblSetEquipment");
+	tblSetEquipment.innerHTML = `
+		<tr>
+			<td>aktiv</td>
+			<td>Bezeichnung</td>
+		</tr>
+	`;
 	for (let i = 0; i < equipment.length; i++) {
         tblSetEquipment.innerHTML += `
             <tr>
@@ -811,11 +852,19 @@ const exportData = () => {
 		});
 		bookingsClone[i].equipment.forEach(e => {
 			let index = equipment.findIndex(el => el.id === e[1]);
-			equipmentString += `${e[0]} x ${equipment[index].name} | `;
+			if (index === -1) {
+				equipmentString += "[nicht mehr verfügbare Ausrüstung]"
+			} else {
+				equipmentString += `${e[0]} x ${equipment[index].name} | `;
+			}
 		});
 		bookingsClone[i].catering.forEach(e => {
 			let index = catering.findIndex(el => el.id === e);
-			cateringString += `${catering[index].name} | `;
+			if (index === -1) {
+				cateringString += "[nicht mehr verfügbarer Artikel]"
+			} else {
+				cateringString += `${catering[index].name} | `;
+			}
 		});
 
 		// cut trailing '|'
@@ -827,9 +876,9 @@ const exportData = () => {
 		bookingsClone[i].equipment = equipmentString;
 		bookingsClone[i].catering = cateringString;
 	}
-	let csv = `Titel,Status,vom,bis zum,von,bis,AnsprechpartnerIn,E-Mail,Tel. 1,Tel 2,Kostenstelle,Kostenkonto,TeilnehmerInnen,Räume,Bestuhlung,Ausrüstung,Catering,Kosten Catering,Kosten Räume,Kosten gesamt,Anmerkungen,\n`;
+	let csv = `Titel,Status,vom,bis zum,von,bis,AnsprechpartnerIn,E-Mail,Tel. 1,Tel 2,Kostenstelle,Kostenkonto,TeilnehmerInnen,Räume,Bestuhlung,Ausrüstung,Catering,Anz. vegetarisch,Anz. vegan,Anz. muslimisch,Kosten Catering,Kosten Räume,Kosten gesamt,Anmerkungen,\n`;
 	bookingsClone.forEach(e => {
-		csv += `${e.title.replaceAll(",", " /")},${e.state.replaceAll(",", " /")},${e.startDate.replaceAll(",", " /")},${e.endDate.replaceAll(",", " /")},${e.startTime.replaceAll(",", " /")},${e.endTime.replaceAll(",", " /")},${e.firstName.replaceAll(",", " /")} ${e.lastName.replaceAll(",", " /")},${e.email.replaceAll(",", " /")},${e.phone1.replaceAll(",", " /")},${e.phone2.replaceAll(",", " /") || ""},${e.account},${e.account2},${e.participants},${e.rooms.replaceAll(",", " /")},${e.seating.replaceAll(",", " /")},${e.equipment.replaceAll(",", " /")},${e.catering.replaceAll(",", " /")},${e.totalCatering || ""},${e.totalRooms || ""},${e.total || ""},${e.annotation.replaceAll(",", " /")}\n`;
+		csv += `${e.title.replaceAll(",", " /")},${e.state.replaceAll(",", " /")},${e.startDate.replaceAll(",", " /")},${e.endDate.replaceAll(",", " /")},${e.startTime.replaceAll(",", " /")},${e.endTime.replaceAll(",", " /")},${e.firstName.replaceAll(",", " /")} ${e.lastName.replaceAll(",", " /")},${e.email.replaceAll(",", " /")},${e.phone1.replaceAll(",", " /")},${e.phone2.replaceAll(",", " /") || ""},${e.account},${e.account2},${e.participants},${e.rooms.replaceAll(",", " /")},${e.seating.replaceAll(",", " /")},${e.equipment.replaceAll(",", " /")},${e.catering.replaceAll(",", " /")},${e.vegetarianMeals || ""},${e.veganMeals || ""},${e.moslemMeals || ""},${e.totalCatering || ""},${e.totalRooms || ""},${e.total || ""},${e.annotation.replaceAll(",", " /")}\n`;
 	});
 	console.log(csv);
 	let timestamp = Date.now();

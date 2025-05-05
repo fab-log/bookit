@@ -138,4 +138,4 @@ const toggleMode = () => {
 	}
 }
 
-// toggleMode();
+toggleMode();

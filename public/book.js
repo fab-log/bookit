@@ -28,14 +28,13 @@ const roomManager = () => {
     // ### ROOM 1 ###
     let selected1 = "selected";
     if (selectedRoom1 === "") selectedRoom1 = selRoom1.value;
-    // console.log({ selectedRoom1 });
     if (selectedRoom1 != "") selected1 = "";
     selRoom1.innerHTML = `<option value="" ${selected1}>Hauptraum *</option>`;
     tempAvailableRooms.forEach(e => {
         let index = rooms.findIndex(el => el.id === e);
         selected1 = selectedRoom1 === e ? "selected" : "";
         selRoom1.insertAdjacentHTML("beforeend", `
-            <option value="${e}" ${selected1}>${rooms[index].location}, ${rooms[index].roomName}</option>
+            <option value="${e}" ${selected1}>${rooms[index].location}, ${rooms[index].roomName} (${rooms[index].maxParticipants})</option>
             `);
     });
     if (selectedRoom1 != "") {
@@ -48,14 +47,13 @@ const roomManager = () => {
     // ### ROOM 2 ###
     let selected2 = "selected";
     selectedRoom2 = selRoom2.value;
-    // console.log({ selectedRoom2 });
     if (selectedRoom2 != "") selected2 = "";
     selRoom2.innerHTML = `<option value="" ${selected2}>Nebenraum 1</option>`;
     tempAvailableSideRooms.forEach(e => {
         let index = rooms.findIndex(el => el.id === e);
         selected2 = selectedRoom2 === e ? "selected" : "";
         selRoom2.insertAdjacentHTML("beforeend", `
-            <option value="${e}" ${selected2}>${rooms[index].location}, ${rooms[index].roomName}</option>
+            <option value="${e}" ${selected2}>${rooms[index].location}, ${rooms[index].roomName} (${rooms[index].maxParticipants})</option>
             `);
     });
     if (selectedRoom2 != "") {
@@ -67,14 +65,13 @@ const roomManager = () => {
     // ### ROOM 3 ###
     let selected3 = "selected";
     selectedRoom3 = selRoom3.value;
-    // console.log({ selectedRoom3 });
     if (selectedRoom3 != "") selected3 = "";
     selRoom3.innerHTML = `<option value="" ${selected3}>Nebenraum 2</option>`;
     tempAvailableSideRooms.forEach(e => {
         let index = rooms.findIndex(el => el.id === e);
         selected3 = selectedRoom3 === e ? "selected" : "";
         selRoom3.insertAdjacentHTML("beforeend", `
-            <option value="${e}" ${selected3}>${rooms[index].location}, ${rooms[index].roomName}</option>
+            <option value="${e}" ${selected3}>${rooms[index].location}, ${rooms[index].roomName} (${rooms[index].maxParticipants})</option>
             `);
     });
     if (selectedRoom3 != "") {
@@ -82,11 +79,18 @@ const roomManager = () => {
         tempAvailableSideRooms.splice(index3, 1);
         // ### SPLICE tempAvaiableRooms AS WELL???
     }
+    console.log({ tempAvailableRooms });
+    console.log({ tempAvailableSideRooms });
     calculatePrice();
 }
 
 const checkAvailability = () => {
     console.log("=> fn checkAvailabilty triggered");
+
+    availableRooms = [];
+    nonAvailableRooms = [];
+    availableSideRooms = [];
+    nonAvailableSideRooms = [];
 
     let tempBookings = [...bookings];
     let allRooms = [];
@@ -104,10 +108,15 @@ const checkAvailability = () => {
     const selBookStartTime = document.querySelector("#selBookStartTime");
     const selBookEndTime = document.querySelector("#selBookEndTime");
     const inpBookNumberOfParticipants = document.querySelector("#inpBookNumberOfParticipants");
+    const selRoom1 = document.querySelector("#selRoom1");
     const bookDiv2 = document.querySelector("#book-div-2");
 
-    availableRooms = [];
-    nonAvailableRooms = [];
+    let mainRoomIndex = rooms.findIndex(e => e.id === selRoom1.value);
+    let mainRoomParticipants = mainRoomIndex != -1 ? rooms[mainRoomIndex].maxParticipants : 10000;
+    if (Number(inpBookNumberOfParticipants.value) > mainRoomParticipants) {
+        showAlert(`<b>Bitte beachten Sie.</b><br>
+            Sie haben mehr TeilnehmerInnen gewählt als für den Raum vorgesehen sind.`, 5000)
+    }
 
     if ((inpBookStartDate.value === "" || inpBookEndDate.value === "" || selBookStartTime.value === "" || selBookEndTime.value === "" || inpBookNumberOfParticipants.value === "") && bookDiv2.classList.contains("collapse-vertically")) {
         return;
@@ -163,19 +172,14 @@ const checkAvailability = () => {
                     (
                         (requestedTimeSlots.includes("morning") && blocked.includes("morning")) || (requestedTimeSlots.includes("afternoon") && blocked.includes("afternoon")) || (requestedTimeSlots.includes("evening") && blocked.includes("evening"))
                     )
-                    ) || 
-                        Number(inpBookNumberOfParticipants.value) > rooms[index].maxParticipants
+                    ) /* || 
+                        Number(inpBookNumberOfParticipants.value) > rooms[index].maxParticipants */
                 )
             {
                 e.rooms.forEach(el => {
                     nonAvailableRooms.push(el);
-                    // console.log("pushed: " + el);
+                    // console.log("pushed to nonAvailableRooms: " + el);
                 });
-                if (rooms[index].id === selectedRoom1 && Number(inpBookNumberOfParticipants.value) > rooms[index].maxParticipants) {
-                    showAlert("Zu viele TeilnehmerInnen.<br>Bitte Raum anpassen.");
-                    selectedRoom1 = "";
-                    selRoom1.value = "";
-                }
 
                 if ([selectedRoom1, selectedRoom2, selectedRoom3].some(room => e.rooms.includes(room))) {
                     availableTimes = availableTimes.filter(el => {
@@ -220,19 +224,18 @@ const checkAvailability = () => {
         ) {
             e.rooms.forEach(el => nonAvailableSideRooms.push(el));
         };
+
         nonAvailableSideRooms = [...new Set(nonAvailableSideRooms)];
         availableSideRooms = allRooms.filter(item => !nonAvailableSideRooms.includes(item));
 
 
     });
-    // console.log("blocked time slots:");
-    // console.log(blocked);
+
     roomManager();
 
     bookDiv2.style.display = "block";
     bookDiv2.classList.remove("collapse-vertically");
-    bookDiv2.classList.add("slide-open");
-    // calculatePrice();
+    bookDiv2.classList.add("slide-open");   
 }
 
 const fillEndDate = () => {
@@ -299,18 +302,30 @@ const calculatePrice = () => {
     }
     document.querySelector("#totalCatering").innerHTML = `€ ${(totalCatering).toFixed(2)}`;
 
+    let room1Id = document.querySelector("#selRoom1").value;
+    let room1Index = rooms.findIndex(e => e.id === room1Id);
+    let room1Fee = room1Index === -1 ? 0 : rooms[room1Index].fee;
+
+    let room2Id = document.querySelector("#selRoom2").value;
+    let room2Index = rooms.findIndex(e => e.id === room2Id);
+    let room2Fee = room2Index === -1 ? 0 : rooms[room2Index].fee;
+
+    let room3Id = document.querySelector("#selRoom3").value;
+    let room3Index = rooms.findIndex(e => e.id === room3Id);
+    let room3Fee = room3Index === -1 ? 0 : rooms[room3Index].fee;
+
+    let fee = room1Fee + room2Fee * (1 - fees.discount) + room3Fee * (1 - fees.discount);
+
     let time = selBookEndTime.value.substring(0, 2) - selBookStartTime.value.substring(0, 2);
-    let fee = time > 4 ? fees.day : fees.halfDay;
-    let numberOfRooms = 1;
-    if (document.querySelector("#selRoom2").value != "") numberOfRooms += 1 - fees.discount;
-    if (document.querySelector("#selRoom3").value != "") numberOfRooms += 1 - fees.discount;
-    let totalRooms = days * numberOfRooms * fee;
+    if (time <= 4) fee = fee * 0.5;
+
+    let totalRooms = days * fee;
     let roomCalculation = document.querySelector("#roomCalculation");
     let sumRoom = document.querySelector("#sumRoom");
     sumRoom.innerHTML = "";
     roomCalculation.innerHTML = "Summe Raumbuchungen";
     if (days > 1) {
-        roomCalculation.innerHTML = `${days} x € ${numberOfRooms * fee} =`;
+        roomCalculation.innerHTML = `${days} x € ${fee} =`;
         sumRoom.innerHTML = "Summe Raumbuchungen";
     }
     document.querySelector("#totalRooms").innerHTML = `€ ${(totalRooms).toFixed(2)}`;
@@ -357,6 +372,7 @@ const setBookDefinitions = () => {
     const selSeating = document.querySelector("#selSeating");
     const inpBookVegetarian = document.querySelector("#inpBookVegetarian");
     const inpBookVegan = document.querySelector("#inpBookVegan");
+    const inpBookMoslem = document.querySelector("#inpBookMoslem");
     const taAnnotations = document.querySelector("#taAnnotations");
     const selScreen = document.querySelector("#selScreen");
     const selFlipchart = document.querySelector("#selFlipchart");
@@ -499,8 +515,8 @@ const saveBooking = async (event, bookingId) => {
     } else {
         let newBooking = {
             id,
-            account: Number(inpAccount.value),
-            account2: Number(inpAccount2.value),
+            account: inpAccount.value,
+            account2: inpAccount2.value,
             state,
             title: inpEventName.value,
             description: taEventDescription.value,
@@ -520,6 +536,7 @@ const saveBooking = async (event, bookingId) => {
             catering: orderedCatering,
             vegetarianMeals: Number(inpBookVegetarian.value),
             veganMeals: Number(inpBookVegan.value),
+            moslemMeals: Number(inpBookMoslem.value),
             annotation: taAnnotations.value,
             totalCatering: Number(document.querySelector("#totalCatering").innerText.substring(2)),
             totalRooms: Number(document.querySelector("#totalRooms").innerText.substring(2)),
@@ -697,6 +714,8 @@ const renderGuidedMenu = (date, time, room) => {
                         <input type="number" id="inpBookVegetarian" min="0" value="0">
                         <p>Anzahl veganer TeilnehmerInnen</p>
                         <input type="number" id="inpBookVegan" min="0" value="0">
+                        <p>Anzahl muslimischer TeilnehmerInnen</p>
+                        <input type="number" id="inpBookMoslem" min="0" value="0">
                     </div>
                     <hr>
                     <h3>Kosten</h3>
@@ -725,10 +744,11 @@ const renderGuidedMenu = (date, time, room) => {
 
     const tableCatering = document.querySelector("#tableCatering");
     for (let i = 0; i < catering.length; i++) {
+        let descriptionString = catering[i].description.length > 50 ? catering[i].description.substring(0, 50) + " ... 🛈" : catering[i].description;
         tableCatering.innerHTML += `
             <tr>
                 <td><input type="checkbox" id="inpBookCatering${i + 1}" data-id="${catering[i].id}" onchange="calculatePrice()"></td>
-                <td><label for="inpBookCatering${i + 1}">${catering[i].name} <span class="small decent">(${catering[i].description}${(catering[i].price).toFixed(2)})</span></label></td>
+                <td><label for="inpBookCatering${i + 1}">${catering[i].name} <br><span class="small decent" title="${catering[i].description}" >${descriptionString} - € ${(catering[i].price).toFixed(2)}</span></label></td>
                 <td><label for="inpBookCatering${i + 1}"></label></td>
                 <td id="cateringPrice${i + 1}"></td>
             </tr>
@@ -858,12 +878,18 @@ const renderEditBooking = (id) => {
     selPinBoard.value = pinBoardIndex === -1 ? 0 : bookings[index].equipment[pinBoardIndex][0]; */
 
     bookings[index].catering.forEach(e => {
-        document.querySelector(`[data-id="${e}"]`).checked = true;
-    })
+        let dataId = document.querySelector(`[data-id="${e}"]`);
+        if (!dataId) {
+            return;
+        } else {
+            dataId.checked = true;
+        }
+    });
 
     inpBookVegetarian.value = bookings[index].vegetarianMeals;
     inpBookVegan.value = bookings[index].veganMeals;
     taAnnotations.value = bookings[index].annotation;
+    inpBookMoslem.value = bookings[index].moslemMeals ? bookings[index].moslemMeals : 0;
 
     document.querySelector("#btnBook").style.display = "none";
     document.querySelector("#btnDismiss").style.display = "none";

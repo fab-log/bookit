@@ -173,13 +173,38 @@ figure {
 	text-align: center;
 }
 
-th, td {
+table input {
+	margin-left: 6px;
+	margin-right: 6px;
+}
+
+table img {
+	margin: auto;
+	text-align: center;
+}
+
+#tableCatering th, 
+#tableCatering td,
+#tableInvoice th, 
+#tableInvoice td {
 	padding-right: 24px;
 }
 
-td:nth-child(4),
-td:nth-child(3) {
+#tableCatering td {
+	padding-top: 9px;
+	padding-bottom: 9px;
+}
+
+#tableCatering td:nth-child(4),
+#tableCatering td:nth-child(3),
+#tableInvoice td:nth-child(4),
+#tableInvoice td:nth-child(3) {
 	text-align: right;
+}
+
+.margin-12-6 th,
+.margin-12-6 td {
+	margin: 12px 6px;
 }
 
 .data-table th,
@@ -204,16 +229,6 @@ td:nth-child(3) {
 	color: var(--color-dimmed);
 }
 
-.pseudo-link {
-	transition: all 0.2s ease-in-out;
-	color: var(--accent-0);
-}
-
-.pseudo-link:hover {
-	cursor: pointer;
-	text-decoration: underline;
-}
-
 .align-center {
 	text-align: center;
 }
@@ -222,8 +237,14 @@ td:nth-child(3) {
 	text-align: left;
 }
 
-.horizontal-margin-0 {
-	margin: 12px 0;
+.pseudo-link {
+	transition: all 0.2s ease-in-out;
+	color: var(--accent-0);
+}
+
+.pseudo-link:hover {
+	cursor: pointer;
+	text-decoration: underline;
 }
 
 .main {
@@ -499,7 +520,7 @@ td:nth-child(3) {
 	padding: 24px;
 	background-color: var(--bg-1);
 	min-width: 750px;
-	max-width: 900px;
+	max-width: 1200px;
 	border-radius: var(--border-radius);
 }
 
