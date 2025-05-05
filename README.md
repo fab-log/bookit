@@ -50,6 +50,8 @@ Current version: 1.0.0
 
 The application does not provide a full user management. Though, regular users and administrators do need passwords to access the app. The password is encrypted before being stored on the server. 
 
+The initial password (user and admin) after installation is `321321321`.
+
 Be cautious when passing the password to new users or admins and update the passwords regularly.
 
 #### Installation
