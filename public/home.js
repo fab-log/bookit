@@ -137,5 +137,3 @@ const toggleMode = () => {
 		`;
 	}
 }
-
-toggleMode();
