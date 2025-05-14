@@ -20,7 +20,7 @@ const renderTerms = () => {
 				<a href="assets/Preise_BTZ.pdf" target="_blank" onclick="dismiss()">
 					<figure>
 						<img src="assets/screenshot_preise.png" alt="Screenshot Preise">
-						<figcaption>Presie</figcaption>
+						<figcaption>Preise</figcaption>
 					</figure>
 				</a>
 				<a href="assets/Buchungsbedingungen_BTZ.pdf" target="_blank" onclick="dismiss()">
