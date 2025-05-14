@@ -577,7 +577,7 @@ app.post("/bookit.newBooking", (request, response) => {
             res.status = "OK";
             res.bookings = parsedBookings;
             response.json(res);
-            sendConfirmationEmail(`p.vogt@diakonie-kreis-re.de, cafe.claudius@diakonie-kreis-re.de, ${data.email}`, data, "Neue Buchung");
+            sendConfirmationEmail(`john.doe@example.com, ${data.email}`, data, "Neue Buchung");
         });
     });
 });
@@ -606,7 +606,7 @@ app.post("/bookit.updateBookings", (request, response) => {
             res.bookings = parsedBookings;
             response.json(res);
 
-            sendConfirmationEmail(`p.vogt@diakonie-kreis-re.de, cafe.claudius@diakonie-kreis-re.de, ${data.email}`, data, type);
+            sendConfirmationEmail(`john.doe@example.com, ${data.email}`, data, type);
         });
     });
 });
