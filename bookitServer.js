@@ -244,6 +244,12 @@ const sendConfirmationEmail = (userEmail, booking, type) => {
                     <td>&nbsp;</td><td>&nbsp;</td>
                 </tr>
                 <tr>
+                    <td>Anmerkungen</td><td>${booking.annotation}</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td><td>&nbsp;</td>
+                </tr>
+                <tr>
                     <td>Summe Raumbuchungen</td><td style="text-align: right;">€ ${booking.totalRooms.toFixed(2)}</td>
                 </tr>
 
@@ -266,6 +272,44 @@ const sendConfirmationEmail = (userEmail, booking, type) => {
     });
 };
 
+const sendBookingsJSON = () => {
+    fs.readFile("./bookit_db/bookings.json", "utf8", (err, bookings) => {
+        if (err) {
+            console.error("error: ", err);
+            return;
+        }
+        
+        const mailOptions = {
+            from: 'noreply@fablog.eu',
+            to: "f.ruin@diakonie-kreis-re.de",
+            subject: `bookings from ${new Date(Date.now()).toLocaleDateString()}`,
+            attachments: [
+                {
+                    filename: 'bookings.json',
+                    content: bookings,
+                    contentType: 'application/json'
+                }
+            ]
+        }
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return console.log('Error occurred: ' + error.message);
+            }
+            console.log('bookings.json sent: ' + info.response);
+        });
+    });
+}
+
+const checkTimeAndSendEmail = () => {
+    const now = new Date();
+    const hours = now.getHours();
+    if (hours === 20) {
+        sendBookingsJSON();
+    }
+};
+
+setInterval(checkTimeAndSendEmail, 3600000);    // once an hour
 
 // ### PASSWORDS ###
 
@@ -577,7 +621,7 @@ app.post("/bookit.newBooking", (request, response) => {
             res.status = "OK";
             res.bookings = parsedBookings;
             response.json(res);
-            sendConfirmationEmail(`john.doe@example.com, ${data.email}`, data, "Neue Buchung");
+            sendConfirmationEmail(`p.vogt@diakonie-kreis-re.de, cafe.claudius@diakonie-kreis-re.de, ${data.email}`, data, "Neue Buchung");
         });
     });
 });
@@ -606,7 +650,7 @@ app.post("/bookit.updateBookings", (request, response) => {
             res.bookings = parsedBookings;
             response.json(res);
 
-            sendConfirmationEmail(`john.doe@example.com, ${data.email}`, data, type);
+            sendConfirmationEmail(`p.vogt@diakonie-kreis-re.de, cafe.claudius@diakonie-kreis-re.de, ${data.email}`, data, type);
         });
     });
 });
