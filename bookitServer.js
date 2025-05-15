@@ -106,8 +106,8 @@ const transporter = nodemailer.createTransport({
     port: 465,
     secure: true, // upgrade later with STARTTLS
     auth: {
-      user: "noreply@fablog.eu",
-      pass: "mxvNfgAWFWps",
+      user: "john.doe@example.com",
+      pass: "xyz",
     }
 });
 
@@ -146,7 +146,7 @@ const sendConfirmationEmail = (userEmail, booking, type) => {
 
     let subject = booking.state != "active" ? "Stornierungsbestätigung bookit" : "Buchungsbestätigung bookit";
     const mailOptions = {
-        from: 'noreply@fablog.eu',
+        from: 'john.doe@example.com',
         to: userEmail,
         subject,
         html: `
@@ -280,8 +280,8 @@ const sendBookingsJSON = () => {
         }
         
         const mailOptions = {
-            from: 'noreply@fablog.eu',
-            to: "f.ruin@diakonie-kreis-re.de",
+            from: 'john.doe@example.com',
+            to: "john.doe@example.com",
             subject: `bookings from ${new Date(Date.now()).toLocaleDateString()}`,
             attachments: [
                 {
@@ -621,7 +621,7 @@ app.post("/bookit.newBooking", (request, response) => {
             res.status = "OK";
             res.bookings = parsedBookings;
             response.json(res);
-            sendConfirmationEmail(`p.vogt@diakonie-kreis-re.de, cafe.claudius@diakonie-kreis-re.de, ${data.email}`, data, "Neue Buchung");
+            sendConfirmationEmail(`john.doe@example.com, ${data.email}`, data, "Neue Buchung");
         });
     });
 });
@@ -650,7 +650,7 @@ app.post("/bookit.updateBookings", (request, response) => {
             res.bookings = parsedBookings;
             response.json(res);
 
-            sendConfirmationEmail(`p.vogt@diakonie-kreis-re.de, cafe.claudius@diakonie-kreis-re.de, ${data.email}`, data, type);
+            sendConfirmationEmail(`john.doe@example.com, ${data.email}`, data, type);
         });
     });
 });
