@@ -57,6 +57,7 @@ const renderAddNewCateringArticle = () => {
 
 const saveCatering = async () => {
 	console.log("=> fn saveCatering triggered");
+	startLoader();
 	let toBeRemoved = [];
 	for (let i = 0; i < catering.length; i++) {
 		if (document.querySelector(`#chb_${catering[i].id}`).checked != true) toBeRemoved.push(catering[i].id);
@@ -100,8 +101,10 @@ const saveCatering = async () => {
 	console.log({ status });
 	if (serverResponse.status != "OK") {
 		showAlert(`Fehler!<br>${serverResponse.status}<br>Bitte erneut versuchen.`);
+		stopLoader();
 		return;
 	}
+	stopLoader();
 	showAlert("Änderungen wurden gespeichert");
 	renderAdminTools();
 }
@@ -182,6 +185,7 @@ const renderSetCatering = () => {
 
 const updateUserPassword = async () => {
 	console.log("=> fn updateUserPassword triggered");
+	startLoader();
 	const inpSetUserPassword = document.querySelector("#inpSetUserPassword");
 	const inpConfirmUserPassword = document.querySelector("#inpConfirmUserPassword");
 	if (inpSetUserPassword.value != inpConfirmUserPassword.value) {
@@ -214,15 +218,18 @@ const updateUserPassword = async () => {
 	let status = serverResponse.status;
 	console.log({ status });
 	if (serverResponse.status != "OK") {
+		stopLoader();
 		showAlert(`Fehler!<br>${serverResponse.status}<br>Bitte erneut versuchen.`);
 		return;
 	}
+	stopLoader();
 	showAlert("Das Nutzerpasswort wurde geändert");
 	renderAdminTools();
 }
 
 const updateAdminPassword = async () => {
 	console.log("=> fn updateAdminPassword triggered");
+	startLoader();
 	const inpSetAdminPassword = document.querySelector("#inpSetAdminPassword");
 	const inpConfirmAdminPassword = document.querySelector("#inpConfirmAdminPassword");
 	if (inpSetAdminPassword.value != inpConfirmAdminPassword.value) {
@@ -255,9 +262,11 @@ const updateAdminPassword = async () => {
 	let status = serverResponse.status;
 	console.log({ status });
 	if (serverResponse.status != "OK") {
+		stopLoader();
 		showAlert(`Fehler!<br>${serverResponse.status}<br>Bitte erneut versuchen.`);
 		return;
 	}
+	stopLoader();
 	showAlert("Das Administratorpasswort wurde geändert");
 	renderAdminTools();
 }
@@ -330,6 +339,7 @@ const addNewRoom = () => {
 
 const saveRooms = async () => {
 	console.log("=> fn saveRooms triggered");
+	startLoader();
 	let toBeRemoved = [];
 	for (let i = 0; i < rooms.length; i++) {
 		if (document.querySelector(`#chb_${rooms[i].id}`).checked != true) toBeRemoved.push(rooms[i].id);
@@ -388,10 +398,11 @@ const saveRooms = async () => {
 	let status = serverResponse.status;
 	console.log({ status });
 	if (serverResponse.status != "OK") {
+		stopLoader();
 		showAlert(`Fehler!<br>${serverResponse.status}<br>Bitte erneut versuchen.`);
 		return;
 	}
-
+	stopLoader();
 	showAlert("Änderungen wurden gespeichert");
 	renderAdminTools();
 }
@@ -504,6 +515,7 @@ const renderSetRooms = () => {
 
 const saveFees = async () => {
 	console.log("=> fn saveFees triggered");
+	startLoader();
 	for (let key in fees) {
 		let inpFees = document.querySelector(`#inpFees_${key}`);
 		if (inpFees.value === "") {
@@ -526,10 +538,11 @@ const saveFees = async () => {
 	let status = serverResponse.status;
 	console.log({ status });
 	if (serverResponse.status != "OK") {
+		stopLoader();
 		showAlert(`Fehler!<br>${serverResponse.status}<br>Bitte erneut versuchen.`);
 		return;
 	}
-
+	stopLoader();
 	showAlert("Änderungen wurden gespeichert");
 	renderAdminTools();
 }
@@ -587,6 +600,7 @@ const addNewSeating = () => {
 
 const saveSeatings = async () => {
 	console.log("=> fn saveSeatings triggered");
+	startLoader();
 	let toBeRemoved = [];
 	for (let i = 0; i < seatings.length; i++) {
 		if (document.querySelector(`#chb_${i}`).checked != true) toBeRemoved.push(seatings[i]);
@@ -612,10 +626,11 @@ const saveSeatings = async () => {
 	let status = serverResponse.status;
 	console.log({ status });
 	if (serverResponse.status != "OK") {
+		stopLoader();
 		showAlert(`Fehler!<br>${serverResponse.status}<br>Bitte erneut versuchen.`);
 		return;
 	}
-
+	stopLoader();
 	showAlert("Änderungen wurden gespeichert");
 	renderAdminTools();
 }
@@ -697,6 +712,7 @@ const addNewEquipment = () => {
 
 const saveEquipment = async () => {
 	console.log("=> fn saveEquipment triggered");
+	startLoader();
 	let toBeRemoved = [];
 	for (let i = 0; i < equipment.length; i++) {
 		if (document.querySelector(`#chb_${i}`).checked != true) toBeRemoved.push(equipment[i].id);
@@ -725,10 +741,11 @@ const saveEquipment = async () => {
 	let status = serverResponse.status;
 	console.log({ status });
 	if (serverResponse.status != "OK") {
+		stopLoader();
 		showAlert(`Fehler!<br>${serverResponse.status}<br>Bitte erneut versuchen.`);
 		return;
 	}
-
+	stopLoader();
 	showAlert("Änderungen wurden gespeichert");
 	renderAdminTools();
 }
@@ -841,6 +858,7 @@ const renderAdminTools = () => {
 
 const exportData = () => {
 	console.log("=> fn exportData triggered");
+	startLoader();
 	const bookingsClone = structuredClone(bookings);
 	for (let i = 0; i < bookingsClone.length; i++) {
 		let roomsString = "";
@@ -880,7 +898,7 @@ const exportData = () => {
 	bookingsClone.forEach(e => {
 		csv += `${e.title.replaceAll(",", " /")},${e.state.replaceAll(",", " /")},${e.startDate.replaceAll(",", " /")},${e.endDate.replaceAll(",", " /")},${e.startTime.replaceAll(",", " /")},${e.endTime.replaceAll(",", " /")},${e.firstName.replaceAll(",", " /")} ${e.lastName.replaceAll(",", " /")},${e.email.replaceAll(",", " /")},${e.phone1.replaceAll(",", " /")},${e.phone2.replaceAll(",", " /") || ""},${e.account},${e.account2},${e.participants},${e.rooms.replaceAll(",", " /")},${e.seating.replaceAll(",", " /")},${e.equipment.replaceAll(",", " /")},${e.catering.replaceAll(",", " /")},${e.vegetarianMeals || ""},${e.veganMeals || ""},${e.moslemMeals || ""},${e.totalCatering || ""},${e.totalRooms || ""},${e.total || ""},${e.annotation.replaceAll(",", " /")}\n`;
 	});
-	console.log(csv);
+	// console.log(csv);
 	let timestamp = Date.now();
 	let now = new Date(timestamp);
 	let dateString = now.toISOString().substring(0, 16).replaceAll(":", "-");
@@ -892,5 +910,6 @@ const exportData = () => {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+	stopLoader();
 }
 

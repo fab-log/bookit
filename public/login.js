@@ -1,7 +1,9 @@
 let admin = false;
 
 const userLogin = async (event) => {
+	console.log("=> fn userLogin triggered");
 	event.preventDefault();
+	startLoader();
 	const inpLoginUserPassword = document.querySelector("#inpLoginUserPassword");
 	let data = {
 		password: inpLoginUserPassword.value
@@ -31,10 +33,14 @@ const userLogin = async (event) => {
 	await getFees();
 	await getEquipment();
 	renderHome();
+	checkLocalStorage();
+	stopLoader();
 }
 
 const adminLogin = async (event) => {
+	console.log("=> fn adminLogin triggered");
 	event.preventDefault();
+	startLoader();
 	const inpLoginAdminPassword = document.querySelector("#inpLoginAdminPassword");
 	let data = {
 		password: inpLoginAdminPassword.value
@@ -64,7 +70,9 @@ const adminLogin = async (event) => {
 	await getFees();
 	await getEquipment();
 	renderHome();
+	checkLocalStorage();
 	console.log({ admin });
+	stopLoader();
 }
 
 const toggleAdminLogin = (event) => {
@@ -95,10 +103,11 @@ const toggleAdminLogin = (event) => {
 const renderLogin = () => {
 	console.log("=> fn renderLogin triggered");
 	paginator = "login";
+	pageHistory.push("login");
+	history.pushState({ page: "login" }, "", "");
 	console.log({ paginator });
 	closeAllModals();
 	modalPopUp.style.display = "block";
-	// <img src="assets/key.webp" alt="Schlüssel" class="icon"></img>
 	modalPopUp.innerHTML = `
 		<img src="assets/logo.webp" alt="Logo" style="width: 250px;"><br>
 		<h2>Anmelden</h2>

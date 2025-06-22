@@ -19,14 +19,14 @@
 				</figure>
 			</div>
 
-			<div class="header-grid-item" onclick="renderCalendar()">
+			<div class="header-grid-item" onclick="renderCalendar(selectedYear, selectedMonth)">
 				<figure>
 					<img src="assets/agenda.webp" alt="Kalender">
 					<figcaption>Kalender</figcaption>
 				</figure>
 			</div>
 
-			<div class="header-grid-item" onclick="renderOneDay()">
+			<div class="header-grid-item" onclick="renderOneDay(lastSelectedDay)">
 				<figure>
 					<img src="assets/one.webp" alt="Tagesansicht">
 					<figcaption>Tagesansicht</figcaption>
@@ -53,6 +53,10 @@
 		<div class="alert" id="alert"></div>
 
 	</div>	<!-- main -->
+
+	<div id="loader">
+		<img src="assets/rotating_arrow.webp" alt="loader">
+	</div>
 
 	<script src="main.js"></script>
 	<script src="login.js"></script>

@@ -1,11 +1,3 @@
-const displayDate = () => {
-	console.log(document.querySelector("#inpDate").value);
-}
-
-const displayTime = () => {
-	console.log(document.querySelector("#selTime").value);
-}
-
 const renderTerms = () => {
 	if (modalPopUp.style.display === "block") {
 		modalPopUp.style.display = "none";
@@ -39,7 +31,6 @@ const logout = () => {
 	window.location.reload();
 }
 
-
 const renderHome = (edits) => {
 	console.log("=> fn renderHome triggered");
 	if (edits === 0) numberOfEdits = 0;
@@ -48,6 +39,8 @@ const renderHome = (edits) => {
 		return;
 	}
 	paginator = "home";
+	pageHistory.push("home");
+	history.pushState({ page: "home" }, "", "");
 	console.log({ paginator });
 	editId = "";
 	closeAllModals();
@@ -71,12 +64,12 @@ const renderHome = (edits) => {
 			<h2>Tagungsräume im BTZ oder MCZ buchen</h2>
 		</div>
 		<div class="home-grid-container">
-			<div class="home-grid-item" onclick="renderCalendar()">
+			<div class="home-grid-item" onclick="renderCalendar(selectedYear, selectedMonth)">
 				<img src="assets/agenda.webp" alt="Screenshot Kalender">
 				<h3>Kalender</h3>
 				<p>Schauen Sie im Kalender nach, an welchen Tagen Räume buchbar sind.</p>
 			</div>
-			<div class="home-grid-item" onclick="renderOneDay()">
+			<div class="home-grid-item" onclick="renderOneDay(lastSelectedDay)">
 				<img src="assets/one.webp" alt="Screenshot Kalender">
 				<h3>Tagesansicht</h3>
 				<p>Übersicht aller Räume an einem bestimmten Tag.</p>
@@ -119,6 +112,8 @@ const renderHome = (edits) => {
 }
 // ### DARK MODE ###
 
+let config = {};
+
 const toggleMode = () => {
 
     const figToggleMode = document.querySelector("#figToggleMode");
@@ -129,11 +124,32 @@ const toggleMode = () => {
 			<img src="assets/moon.webp" alt="Mond">
 			<figcaption>Dunkler Modus</figcaption>
 		`;
+		config.mode = "light";
+		localStorage.setItem("bookitConfig", JSON.stringify(config));
 	} else {
 		document.body.classList.add("dark");
         figToggleMode.innerHTML = `
 			<img src="assets/sun.webp" alt="Sonne">
 			<figcaption>Heller Modus</figcaption>
 		`;
+		config.mode = "dark";
+		localStorage.setItem("bookitConfig", JSON.stringify(config));
+	}
+}
+
+const checkLocalStorage = () => {
+    console.log("=> fn checkLocalStorage triggered");
+    if (!localStorage.getItem("bookitConfig")) {
+      config.mode = "light";
+	  console.log("mode: " + config.mode);
+      return;
+    }
+    config = JSON.parse(localStorage.getItem("bookitConfig"));
+    if (config.mode === "dark") {
+      toggleMode();
+	  console.log("mode: " + config.mode);
+    } else {
+      config.mode = "light";
+	  console.log("mode: " + config.mode);
 	}
 }

@@ -1,3 +1,5 @@
+let version = "1.1.0";
+
 // ### GET DATA FROM DATABASE ###
 
 const getBookings = async () => {
@@ -118,6 +120,7 @@ let chave = "";
 let chaveDoChefe = "";
 
 let paginator;
+let pageHistory = [];
 
 
 // ### RANDOM CYPHERS ###
@@ -206,4 +209,70 @@ const addCSSRule = (rule) => {
 
 const removeCSSRule = (index) => {
     style.sheet.deleteRule(index);
+}
+
+
+// ### LOADER ###
+
+const divLoader = document.querySelector("#loader");
+
+const startLoader = () => {
+  divLoader.style.display = "block";
+  console.log("=> loader started");
+}
+
+const stopLoader = () => {
+  divLoader.style.display = "none";
+  console.log("=> loader stopped");
+}
+
+
+// ### NAVIGATION ###
+
+const preventDataLoss = (event) => {
+    event.preventDefault();
+    // renderLogin();
+}
+
+const renderLast = (edits) => {
+	console.log("=> fn renderLast triggered");
+	if (edits === 0) numberOfEdits = 0;
+	if (numberOfEdits > 0) {
+		confirmDismissBooking();
+		return;
+	}
+	let last = pageHistory.at(-1) === undefined ? "home" : pageHistory.at(-1);
+	if (last === "home") renderHome();
+	if (last === "calendar") renderCalendar(selectedYear, selectedMonth);
+	if (last === "day") renderOneDay(lastSelectedDay);
+	// if (last === "login") logIn();
+  window.removeEventListener("beforeunload", preventDataLoss);
+  // window.addEventListener("beforeunload", renderLogin);
+}
+
+const moveBack = (edits) => {
+	console.log("=> fn moveBack triggered");
+	if (edits === 0) numberOfEdits = 0;
+	if (numberOfEdits > 0) {
+		confirmDismissBooking();
+		return;
+	}
+	let last = pageHistory.at(-2) === undefined ? "home" : pageHistory.at(-2);
+	if (last === "home") renderHome();
+	if (last === "calendar") renderCalendar(selectedYear, selectedMonth);
+	if (last === "day") renderOneDay(lastSelectedDay);
+	if (last === "login") window.location.reload();
+
+}
+
+const popstateHandler = (event) => {
+  event.preventDefault();
+  moveBack();
+}
+
+window.addEventListener('popstate', popstateHandler);
+
+const beforeUnloadHandler = (event) => {
+  event.preventDefault();
+  // renderLogin();
 }

@@ -142,7 +142,7 @@ const renderCalendar = (year, month) => {
 		confirmDismissBooking();
 		return;
 	}
-	if (!year || !month || paginator != "calendar") {
+	if (!year || !month) {		//  || paginator != "calendar"
 		getCurrentDate();
 		year = currentDate.year;
 		month = currentDate.month;
@@ -150,6 +150,8 @@ const renderCalendar = (year, month) => {
 		selectedMonth = currentDate.month;
 	}
 	paginator = "calendar";
+	pageHistory.push("calendar");
+	history.pushState({ page: "calendar" }, "", "");
 	console.log({ paginator });
 
 	// HANDLE LENGTH OF MONTH

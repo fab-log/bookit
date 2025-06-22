@@ -3,45 +3,63 @@ const times = ["06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "1
 let today = new Date(Date.now());
 let pickedDay = today.getDate();
 
+let timeout;
+
 const renderSpecificDay = () => {
+
+	clearTimeout(timeout);
+    
 	const inpDay = document.querySelector("#inp-day");
-	selectedYear = Number(inpDay.value.substring(0, 4));
-	selectedMonth = Number(inpDay.value.substring(5, 7));
-	selectedDay = Number(inpDay.value.substring(8));
-	renderOneDay(inpDay.value);
+	startLoader();
+
+    timeout = setTimeout(() => {
+        if (inpDay.value) {
+            const date = new Date(inpDay.value);
+            if (!isNaN(date.getTime())) {
+				selectedYearD = Number(inpDay.value.substring(0, 4));
+				selectedMonthD = Number(inpDay.value.substring(5, 7));
+				selectedDayD = Number(inpDay.value.substring(8));
+				stopLoader();
+				renderOneDay(inpDay.value);
+            }
+        }
+    }, 850);
+
 }
 
 const oneDayBack = () => {
-	selectedDay -= 1;
-	if (selectedDay < 1) {
-		selectedMonth -= 1;
-		if (selectedMonth < 1) {
-			selectedMonth = 12;
-			selectedYear -= 1;
+	selectedDayD -= 1;
+	if (selectedDayD < 1) {
+		selectedMonthD -= 1;
+		if (selectedMonthD < 1) {
+			selectedMonthD = 12;
+			selectedYearD -= 1;
 		}
-		selectedDay = new Date(selectedYear, selectedMonth, 0).getDate();
+		selectedDayD = new Date(selectedYearD, selectedMonthD, 0).getDate();
 	}
-	let monthString = selectedMonth < 10 ? `0${selectedMonth}` : selectedMonth;
-	let dayString = selectedDay < 10 ? `0${selectedDay}` : selectedDay;
-	let dateString = `${selectedYear}-${monthString}-${dayString}`;
+	let monthString = selectedMonthD < 10 ? `0${selectedMonthD}` : selectedMonthD;
+	let dayString = selectedDayD < 10 ? `0${selectedDayD}` : selectedDayD;
+	let dateString = `${selectedYearD}-${monthString}-${dayString}`;
 	renderOneDay(dateString);
 }
 
 const oneDayForth = () => {
-	selectedDay += 1;
-	if (selectedDay > new Date(selectedYear, selectedMonth, 0).getDate()) {
-		selectedDay = 1;
-		selectedMonth += 1;
-		if (selectedMonth > 12) {
-			selectedMonth = 1;
-			selectedYear += 1;
+	selectedDayD += 1;
+	if (selectedDayD > new Date(selectedYearD, selectedMonthD, 0).getDate()) {
+		selectedDayD = 1;
+		selectedMonthD += 1;
+		if (selectedMonthD > 12) {
+			selectedMonthD = 1;
+			selectedYearD += 1;
 		}
 	}
-	let monthString = selectedMonth < 10 ? `0${selectedMonth}` : selectedMonth;
-	let dayString = selectedDay < 10 ? `0${selectedDay}` : selectedDay;
-	let dateString = `${selectedYear}-${monthString}-${dayString}`;
+	let monthString = selectedMonthD < 10 ? `0${selectedMonthD}` : selectedMonthD;
+	let dayString = selectedDayD < 10 ? `0${selectedDayD}` : selectedDayD;
+	let dateString = `${selectedYearD}-${monthString}-${dayString}`;
 	renderOneDay(dateString);
 }
+
+let lastSelectedDay;
 
 const renderOneDay = (day) => {
 	console.log("=> fn renderOneDay triggered");
@@ -49,14 +67,17 @@ const renderOneDay = (day) => {
 		confirmDismissBooking();
 		return;
 	}
-	if (!day || paginator != "day") {
+	if (!day) {		//  || paginator != "day"
 		getCurrentDate();
 		day = currentDateString;
-		selectedMonth = currentDate.month;
-		selectedYear = currentDate.year;
-		selectedDay = currentDate.day;
+		selectedMonthD = currentDate.month;
+		selectedYearD = currentDate.year;
+		selectedDayD = currentDate.day;
 	}
+	lastSelectedDay = day;
 	paginator = "day";
+	pageHistory.push("day");
+	history.pushState({ page: "day" }, "", "");
 	console.log({ paginator });
 
 	closeAllModals();
@@ -87,7 +108,7 @@ const renderOneDay = (day) => {
 	modalMax.innerHTML = `
 		<div class="calendar-top-menu">
 			<img src="assets/arrow_left.webp" class="icon" alt="Einen Tag zurück" onclick="oneDayBack()">
-			<input type="date" id="inp-day" placeholder="Datum wählen" onchange="renderSpecificDay()">
+			<input type="date" id="inp-day" placeholder="Datum wählen" min="2020-01-01" onchange="renderSpecificDay()">
 			<img src="assets/arrow_right.webp" class="icon" alt="Einen Tag vor" onclick="oneDayForth()">
 			<div>
 				<p class="calendar-date color-accent-180">${dayPicker(day)}, ${day.substring(8)}.${day.substring(5, 7)}.${day.substring(0, 4)}</p>

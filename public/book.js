@@ -79,8 +79,8 @@ const roomManager = () => {
         tempAvailableSideRooms.splice(index3, 1);
         // ### SPLICE tempAvaiableRooms AS WELL???
     }
-    console.log({ tempAvailableRooms });
-    console.log({ tempAvailableSideRooms });
+    // console.log({ tempAvailableRooms });
+    // console.log({ tempAvailableSideRooms });
     calculatePrice();
 }
 
@@ -95,6 +95,7 @@ const checkAvailability = () => {
     let tempBookings = [...bookings];
     let allRooms = [];
     rooms.forEach(e => allRooms.push(e.id));
+    // console.log( {allRooms });
 
     if (editId != "") {
         let editIndex = tempBookings.findIndex(e => e.id === editId);
@@ -108,6 +109,7 @@ const checkAvailability = () => {
     const selBookStartTime = document.querySelector("#selBookStartTime");
     const selBookEndTime = document.querySelector("#selBookEndTime");
     const inpBookNumberOfParticipants = document.querySelector("#inpBookNumberOfParticipants");
+    const inpBookNumberOfInstructors = document.querySelector("#inpBookNumberOfInstructors");
     const selRoom1 = document.querySelector("#selRoom1");
     const bookDiv2 = document.querySelector("#book-div-2");
 
@@ -137,8 +139,6 @@ const checkAvailability = () => {
     if (thisStartTime > 18 || thisEndTime > 18) {
         requestedTimeSlots.push("evening");
     }
-    // console.log("requestedTimeSlots:");
-    // console.log(requestedTimeSlots);
 
     let blocked = [];
 
@@ -201,8 +201,6 @@ const checkAvailability = () => {
                 selBookStartTime.value = tempStartValue;
                 selBookEndTime.value = tempEndValue;
         };
-        nonAvailableRooms = [...new Set(nonAvailableRooms)];
-        availableRooms = allRooms.filter(item => !nonAvailableRooms.includes(item));
 
         if (e.state === "active" && 
             (
@@ -225,11 +223,15 @@ const checkAvailability = () => {
             e.rooms.forEach(el => nonAvailableSideRooms.push(el));
         };
 
-        nonAvailableSideRooms = [...new Set(nonAvailableSideRooms)];
-        availableSideRooms = allRooms.filter(item => !nonAvailableSideRooms.includes(item));
-
 
     });
+
+    nonAvailableRooms = [...new Set(nonAvailableRooms)];
+    // console.log({ nonAvailableRooms });
+    availableRooms = allRooms.filter(item => !nonAvailableRooms.includes(item));
+
+    nonAvailableSideRooms = [...new Set(nonAvailableSideRooms)];
+    availableSideRooms = allRooms.filter(item => !nonAvailableSideRooms.includes(item));
 
     roomManager();
 
@@ -258,10 +260,10 @@ const confirmDismissBooking = () => {
             Wollen Sie fortfahren?</p>
             <hr>
             <button type="button" onclick="dismiss()">zurückkehren</button>
-            <button type="button" onclick="renderHome(0)">Daten verwerfen</button>
+            <button type="button" onclick="renderLast(0)">Daten verwerfen</button>
         `;
     } else {
-        renderHome();
+        renderLast();
     }
 }
 
@@ -271,7 +273,8 @@ const calculatePrice = () => {
     const inpBookEndDate = document.querySelector("#inpBookEndDate");
     const selBookStartTime = document.querySelector("#selBookStartTime");
     const selBookEndTime = document.querySelector("#selBookEndTime");
-    let participants = document.querySelector("#inpBookNumberOfParticipants").value;
+    let participants = Number(document.querySelector("#inpBookNumberOfParticipants").value) + Number(document.querySelector("#inpBookNumberOfInstructors").value);
+    console.log("participants: " + participants);
     let totalCatering = 0;
     orderedCatering = [];
 
@@ -366,6 +369,7 @@ const setBookDefinitions = () => {
     const selBookStartTime = document.querySelector("#selBookStartTime");
     const selBookEndTime = document.querySelector("#selBookEndTime");
     const inpBookNumberOfParticipants = document.querySelector("#inpBookNumberOfParticipants");
+    const inpBookNumberOfInstructors = document.querySelector("#inpBookNumberOfInstructors");
     const selRoom1 = document.querySelector("#selRoom1");
     const selRoom2 = document.querySelector("#selRoom2");
     const selRoom3 = document.querySelector("#selRoom3");
@@ -400,7 +404,6 @@ const saveBooking = async (event, bookingId) => {
     if (inpBookStartDate.value === "") {
         showAlert("Bitte ein Startdatum angeben.");
         inpBookStartDate.focus();
-        console.log("Heloo");
         return;
     }
     if (inpBookEndDate.value === "") {
@@ -428,7 +431,7 @@ const saveBooking = async (event, bookingId) => {
         selBookEndTime.focus();
         return;
     }
-    if (inpBookNumberOfParticipants.value === "" || Number(inpBookNumberOfParticipants.value) < 1) {
+    if (inpBookNumberOfParticipants.value === "" || Number(inpBookNumberOfParticipants.value) <= 1) {
         showAlert("Bitte eine Teilnehmerzahl größer 1 angeben.");
         inpBookNumberOfParticipants.focus();
         return;
@@ -513,7 +516,7 @@ const saveBooking = async (event, bookingId) => {
         `;
         modalPopUp.style.display = "block";
     } else {
-        let newBooking = {
+        let data = {
             id,
             account: inpAccount.value,
             account2: inpAccount2.value,
@@ -530,6 +533,7 @@ const saveBooking = async (event, bookingId) => {
             startTime: selBookStartTime.value,
             endTime: selBookEndTime.value,
             participants: Number(inpBookNumberOfParticipants.value),
+            instructors: Number(inpBookNumberOfInstructors.value),
             rooms,
             seating: selSeating.value,
             equipment: thisEquipment,
@@ -543,16 +547,15 @@ const saveBooking = async (event, bookingId) => {
             total: Number(document.querySelector("#total").innerText.substring(2)),
         }
     
-        console.log(JSON.stringify(newBooking, null, 2));
+        console.log(JSON.stringify(data, null, 2));
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data)
+        };
         if (bookingId) {
-            let data = newBooking;
-            const options = {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data)
-            };
             const response = await fetch("/bookit.updateBookings", options);
             const serverResponse = await response.json();
             console.log("Updating bookings. Status: " + serverResponse.status);
@@ -561,22 +564,8 @@ const saveBooking = async (event, bookingId) => {
                 return;
             }
             bookings = serverResponse.bookings;
-            // bookings.push(newBooking);
-            if (data.state === "cancelled") {
-                showAlert("Buchung wurde storniert");
-            } else {
-                showAlert("Änderungen wurden gespeichert.");
-            }
-            console.log({ bookings });
+            showAlert("Änderungen wurden gespeichert.");
         } else {
-            let data = newBooking
-            const options = {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data)
-            };
             const response = await fetch("/bookit.newBooking", options);
             const serverResponse = await response.json();
             console.log("Save new booking. Status: " + serverResponse.status);
@@ -585,12 +574,11 @@ const saveBooking = async (event, bookingId) => {
                 return;
             }
             bookings = serverResponse.bookings;
-            // bookings.push(newBooking);
             showAlert("Die Buchung wurde gespeichert.");
-            console.log({ bookings });
         }
         alertNoCateringShown = false;
-        renderHome(0);
+        window.removeEventListener("beforeunload", preventDataLoss);
+        renderLast(0);
     }
 }
 
@@ -650,7 +638,9 @@ const renderGuidedMenu = (date, time, room) => {
                 <h3>TeilnehmerInnen</h3>
                 <div class="two-columns">
                     <p>Mit wie vielen TeilnehmerInnen rechnen Sie maximal? <span class="decent">*</span></p>
-                    <input type="number" id="inpBookNumberOfParticipants" min="2" max="100" oninput="checkAvailability()"><span id="span-room-available"></span>
+                    <input type="number" id="inpBookNumberOfParticipants" min="2" max="100" oninput="checkAvailability()">
+                    <p>Wie viele DozentInnen leiten die Veranstaltung?</p>
+                    <input type="number" id="inpBookNumberOfInstructors" min="0" max="5" value="1" oninput="checkAvailability()">
                 </div>
                 <hr>
                 <div id="book-div-2" class="collapse-vertically">
@@ -785,16 +775,34 @@ const renderGuidedMenu = (date, time, room) => {
         selBookStartTime.value = time;
         selBookEndTime.focus();
     }
+
+    window.addEventListener("beforeunload", preventDataLoss);
 }
 
 const cancelBooking = async (id) => {
     console.log("=> fn cancelBooking triggered");
     let index = bookings.findIndex(e => e.id === id);
     bookings[index].state = "cancelled";
-    console.log("state in 'cancelBooking()': " + bookings[index].state);
-    await saveBooking(event, id);
+    let data = bookings[index];
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data)
+    };
+    const response = await fetch("/bookit.updateBookings", options);
+    const serverResponse = await response.json();
+    console.log("Cancelling booking. Status: " + serverResponse.status);
+    if (serverResponse.status != "OK") {
+        showAlert(`Fehler!<br>${serverResponse.status}<br>Bitte erneut versuchen.`);
+        return;
+    }
+    bookings = serverResponse.bookings;
+    showAlert("Buchung wurde storniert");
     editId = "";
-    renderHome();
+    window.removeEventListener("beforeunload", preventDataLoss);
+    renderLast();
 }
 
 const renderCancelBooking = (id) => {
@@ -815,7 +823,6 @@ const editBooking = async (id) => {
 
 const renderEditBooking = (id) => {
     console.log("=> fn renderEditBooking triggered");
-    console.log({ id });
     renderGuidedMenu();
     setBookDefinitions();
     const bookDiv2 = document.querySelector("#book-div-2");
@@ -849,6 +856,7 @@ const renderEditBooking = (id) => {
     selBookStartTime.value = bookings[index].startTime;
     selBookEndTime.value = bookings[index].endTime;
     inpBookNumberOfParticipants.value = bookings[index].participants;
+    inpBookNumberOfInstructors.value = bookings[index].instructors ? bookings[index].instructors : 0;
 
     selRoom1.value = bookings[index].rooms[0];
     selRoom2.value = bookings[index].rooms[1] ? bookings[index].rooms[1] : "";
@@ -896,7 +904,7 @@ const renderEditBooking = (id) => {
     document.querySelector("#divEdit").innerHTML = `
         <button type="button" onclick="editBooking('${bookings[index].id}')">Änderungen speichern</button>
         <button type="button" onclick="renderCancelBooking('${bookings[index].id}')">Buchung stornieren</button>
-        <button type="button" onclick="renderHome()">abbrechen</button>
+        <button type="button" onclick="renderLast()">abbrechen</button>
     `;
     calculatePrice();
     
