@@ -1,9 +1,9 @@
 const express = require("express");
 const fs = require("fs");
 const crypto = require('crypto');
-
 const { request } = require("http");
 const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 const app = express();
 app.use(express.static("public"));
@@ -102,12 +102,12 @@ fs.readFile("./bookit_db/fees.json", "utf8", (err, fees) => {
 // #############
 
 const transporter = nodemailer.createTransport({
-    host: "smtp.strato.de",
-    port: 465,
+    host: process.env.NOREPLY_HOST,
+    port: process.env.NOREPLY_PORT,
     secure: true, // upgrade later with STARTTLS
     auth: {
-      user: "john.doe@example.com",
-      pass: "xyz",
+      user: process.env.NOREPLY_MAIL_ADDRESS,
+      pass: process.env.NOREPLY_MAIL_PW,
     }
 });
 
@@ -138,6 +138,8 @@ const sendConfirmationEmail = (userEmail, booking, type) => {
     let startDateString = `${startDate.substring(8)}.${startDate.substring(5, 7)}.${startDate.substring(0, 4)}`;
     let endDateString = `${endDate.substring(8)}.${endDate.substring(5, 7)}.${endDate.substring(0, 4)}`;
 
+    let instructors = booking.instructors ? booking.instructors : 0;
+
     let equipmentString = "";
     booking.equipment.forEach(e => {
         let index = equipmentCache.findIndex(el => el.id === e[1]);
@@ -146,7 +148,7 @@ const sendConfirmationEmail = (userEmail, booking, type) => {
 
     let subject = booking.state != "active" ? "Stornierungsbestätigung bookit" : "Buchungsbestätigung bookit";
     const mailOptions = {
-        from: 'john.doe@example.com',
+        from: process.env.NOREPLY_MAIL_ADDRESS,
         to: userEmail,
         subject,
         html: `
@@ -175,10 +177,10 @@ const sendConfirmationEmail = (userEmail, booking, type) => {
                     <td>&nbsp;</td><td>&nbsp;</td>
                 </tr>
                 <tr>
-                    <td><b>Teilnehmerzahl</b></td><td></td>
+                    <td><b>Teilnehmerzahl</b></td><td>${booking.participants}</td>
                 </tr>
                 <tr>
-                    <td>${booking.participants}</td><td></td>
+                    <td>Anzahl DozentInnen</td><td>${instructors}</td>
                 </tr>
                 <tr>
                     <td>&nbsp;</td><td>&nbsp;</td>
@@ -280,8 +282,8 @@ const sendBookingsJSON = () => {
         }
         
         const mailOptions = {
-            from: 'john.doe@example.com',
-            to: "john.doe@example.com",
+            from: process.env.NOREPLY_MAIL_ADDRESS,
+            to: process.env.BACKUP_MAIL_ADDRESS,
             subject: `bookings from ${new Date(Date.now()).toLocaleDateString()}`,
             attachments: [
                 {
@@ -621,7 +623,7 @@ app.post("/bookit.newBooking", (request, response) => {
             res.status = "OK";
             res.bookings = parsedBookings;
             response.json(res);
-            sendConfirmationEmail(`john.doe@example.com, ${data.email}`, data, "Neue Buchung");
+            sendConfirmationEmail(`${process.env.BOOKINGS_RESPONSIBLE_MAIL_ADDRESSES}, ${data.email}`, data, "Neue Buchung");
         });
     });
 });
@@ -650,7 +652,7 @@ app.post("/bookit.updateBookings", (request, response) => {
             res.bookings = parsedBookings;
             response.json(res);
 
-            sendConfirmationEmail(`john.doe@example.com, ${data.email}`, data, type);
+            sendConfirmationEmail(`${process.env.BOOKINGS_RESPONSIBLE_MAIL_ADDRESSES}, ${data.email}`, data, type);
         });
     });
 });
