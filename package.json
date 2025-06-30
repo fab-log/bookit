@@ -1,6 +1,6 @@
 {
   "name": "bookit",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "bookitServer.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,10 +9,10 @@
   "author": "Fabian Ruin",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^17.0.0",
     "express": "^4.21.2",
     "nodemailer": "^6.10.0"
   },
-  "devDependencies": {},
   "description": "web based room booking tool",
   "repository": {
     "type": "git",
